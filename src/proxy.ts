@@ -1,0 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
+export function proxy(request:NextRequest){const password=process.env.WORKSPACE_PASSWORD;if(!password){if(process.env.NODE_ENV==='production')return new NextResponse('Set WORKSPACE_PASSWORD before serving this workspace in production.',{status:503});return NextResponse.next();}let supplied='';try{const auth=request.headers.get('authorization')||'';if(auth.startsWith('Basic '))supplied=Buffer.from(auth.slice(6),'base64').toString().split(':').slice(1).join(':');}catch{}const a=Buffer.from(supplied),b=Buffer.from(password);if(a.length===b.length&&timingSafeEqual(a,b))return NextResponse.next();return new NextResponse('Workspace sign-in required.',{status:401,headers:{'WWW-Authenticate':'Basic realm="PayPilot workspace", charset="UTF-8"','Cache-Control':'no-store'}});}
+export const config={matcher:['/((?!pay/|api/paypal/|_next/|favicon.ico).*)']};

@@ -1,0 +1,5 @@
+import { z } from 'zod';
+export const invoiceSchema = z.object({clientName:z.string().trim().min(1).max(150),clientEmail:z.string().email(),dueDate:z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>!isNaN(Date.parse(v))),currency:z.literal('USD').default('USD'),notes:z.string().max(3000).default(''),items:z.array(z.object({description:z.string().trim().min(1).max(500),quantity:z.number().int().min(1).max(10000),unitPriceCents:z.number().int().min(1).max(100000000)})).min(1).max(50),status:z.enum(['DRAFT','PENDING']).default('DRAFT')});
+export function total(items:{quantity:number;unitPriceCents:number}[]) { const n=items.reduce((s,i)=>s+i.quantity*i.unitPriceCents,0); if(!Number.isSafeInteger(n)||n>100000000) throw new Error('Invoice total must be below $1,000,000.'); return n; }
+export const money=(n:number)=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n/100);
+export function status(i:{status:string;dueDate:Date|string}){return i.status==='PENDING'&&new Date(i.dueDate).getTime()<new Date().setUTCHours(0,0,0,0)?'OVERDUE':i.status;}
