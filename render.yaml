@@ -1,0 +1,33 @@
+# SQLite requires a paid service with a persistent disk.
+# Review recurring costs before creating this Blueprint.
+services:
+  - type: web
+    name: paypilot-ai
+    runtime: node
+    plan: 0.5c-512mb
+    region: singapore
+    numInstances: 1
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node scripts/render-start.cjs
+    autoDeployTrigger: 'off'
+    disk:
+      name: paypilot-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: '1'
+      - key: DATABASE_URL
+        value: file:/var/data/paypilot.db
+      - key: WORKSPACE_PASSWORD
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false

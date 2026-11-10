@@ -17,3 +17,4 @@ artifacts/demo/*.mkv
 *.db-journal
 .npm-cache/
 *.tsbuildinfo
+artifacts/deploy/
