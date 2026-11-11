@@ -10,7 +10,7 @@ Freelancers and small businesses need to turn descriptions of work into accurate
 - USD invoices, draft/published states, edit locking after checkout starts, and derived overdue status.
 - PayPal Sandbox Orders with server-side capture verification and duplicate-capture protections.
 - AI financial summaries from up to 200 invoices.
-- Next.js 16, React 19, TypeScript, Tailwind CSS 4, Google Gemini API, PayPal Orders API, Prisma 6, and SQLite.
+- Next.js 16, React 19, TypeScript, Tailwind CSS 4, Google Gemini API, PayPal Orders API, Prisma 6, and SQLite locally or PostgreSQL on Vercel.
 
 ## Screenshots and demo
 
@@ -98,6 +98,8 @@ Without this flag, automated tests do not call Gemini. The live test verifies an
 
 ## Hosting and scope
 
+For Vercel, use the [Vercel deployment guide](VERCEL-DEPLOY.md) and a hosted PostgreSQL database. The included `vercel.json` builds the separate PostgreSQL schema; local development continues to use SQLite. Existing local invoices are not uploaded automatically.
+
 For Render, use the included [Blueprint](render.yaml) and [deployment guide](RENDER-DEPLOY.md). SQLite requires a paid web service with a persistent disk. The startup script applies migrations after the disk mounts and derives the public application origin from Render.
 
-Deploy to a Node.js server with a persistent disk, HTTPS, WORKSPACE_PASSWORD and server-side secrets. Run `prisma migrate deploy` before `next start`. Back up the SQLite database. Ephemeral serverless filesystems and Cloudflare Workers are unsuitable for this SQLite implementation. This is a single-business hackathon app with USD integer quantities; it does not implement tax, multi-tenant accounts, refunds, live payments or webhooks. Payment updates reconcile on checkout confirmation/status requests; refresh the dashboard after payment.
+For the SQLite variant, deploy to a Node.js server with a persistent disk, HTTPS, WORKSPACE_PASSWORD and server-side secrets. Run `prisma migrate deploy` before `next start`. Back up the SQLite database. Ephemeral serverless filesystems are unsuitable for the SQLite variant; Vercel uses the separate hosted PostgreSQL configuration instead. This is a single-business hackathon app with USD integer quantities; it does not implement tax, multi-tenant accounts, refunds, live payments or webhooks. Payment updates reconcile on checkout confirmation/status requests; refresh the dashboard after payment.
